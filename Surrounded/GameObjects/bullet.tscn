@@ -57,6 +57,7 @@ texture = ExtResource("1_of5dx")
 hframes = 2
 
 [node name="bullet_collision" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("CapsuleShape2D_4nvwx")
 
 [node name="bullet_animation" type="AnimationPlayer" parent="."]
@@ -68,5 +69,6 @@ libraries = {
 [node name="bullet_hitbox" type="Area2D" parent="." groups=["enemyDamager"]]
 
 [node name="hitbox" type="CollisionShape2D" parent="bullet_hitbox"]
+visible = false
 shape = SubResource("CapsuleShape2D_jiecf")
 debug_color = Color(1, 0, 0, 0.419608)

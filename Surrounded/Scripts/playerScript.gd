@@ -1,20 +1,27 @@
 extends CharacterBody2D
 
 @onready var animations = $AnimationTree
+@onready var effects = $player_effects
 @onready var animationModes = animations.get("parameters/playback")
 @onready var stats = GlobalScript.playerData
 
 const accel = 1000.0
 const friction = 600.0
 const bulletPath = preload("res://GameObjects/bullet.tscn")
-var input = Vector2.ZERO
 
+var input = Vector2.ZERO
 var isShooting : bool = false
 
 func _ready():
 	GlobalScript.player = self
 	
+func _exit_tree():
+	GlobalScript.player = null
+	
 func _process(_delta):
+	if stats.health <= 0:
+		queue_free()
+	
 	if velocity == Vector2.ZERO:
 		animationModes.travel("idle")
 	else:
@@ -63,3 +70,8 @@ func shoot():
 	
 func _on_shoot_cooldown_timeout():
 	isShooting = false
+	
+func _on_player_hitbox_area_entered(area):
+	if area.is_in_group("zombie"):
+		stats.health -= 1
+		effects.play("hurt")

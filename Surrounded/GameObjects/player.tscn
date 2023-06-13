@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://curjinjo7husj"]
+[gd_scene load_steps=46 format=3 uid="uid://curjinjo7husj"]
 
 [ext_resource type="Script" path="res://Scripts/playerScript.gd" id="1_sefuk"]
 [ext_resource type="Texture2D" uid="uid://67cux5m5abug" path="res://Assets/Sprites/player.png" id="2_5s67m"]
@@ -6,6 +6,43 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w645t"]
 radius = 8.0
 height = 25.0
+
+[sub_resource type="Animation" id="Animation_ch2hp"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("player_sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_3jhyo"]
+resource_name = "hurt"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("player_sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 0, 0, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wb1cp"]
+_data = {
+"RESET": SubResource("Animation_ch2hp"),
+"hurt": SubResource("Animation_3jhyo")
+}
 
 [sub_resource type="Animation" id="Animation_ssbsf"]
 length = 0.001
@@ -338,6 +375,10 @@ transitions = ["idle", "walking", SubResource("AnimationNodeStateMachineTransiti
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id="AnimationNodeStateMachinePlayback_rrdrm"]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i5dwi"]
+radius = 11.0
+height = 32.0
+
 [node name="player" type="CharacterBody2D"]
 script = ExtResource("1_sefuk")
 
@@ -347,6 +388,7 @@ hframes = 12
 vframes = 12
 
 [node name="player_collision" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_w645t")
 
@@ -354,6 +396,11 @@ shape = SubResource("CapsuleShape2D_w645t")
 
 [node name="gunpoint" type="Marker2D" parent="gun_pivot"]
 position = Vector2(16, 0)
+
+[node name="player_effects" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_wb1cp")
+}
 
 [node name="player_animation" type="AnimationPlayer" parent="."]
 libraries = {
@@ -373,4 +420,13 @@ parameters/walking/blend_position = Vector2(0, 0)
 wait_time = 0.4
 one_shot = true
 
+[node name="player_hitbox" type="Area2D" parent="."]
+visible = false
+
+[node name="hitbox" type="CollisionShape2D" parent="player_hitbox"]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_i5dwi")
+debug_color = Color(1, 0, 0, 0.419608)
+
 [connection signal="timeout" from="shoot_cooldown" to="." method="_on_shoot_cooldown_timeout"]
+[connection signal="area_entered" from="player_hitbox" to="." method="_on_player_hitbox_area_entered"]
